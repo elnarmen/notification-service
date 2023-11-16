@@ -38,8 +38,8 @@ class Client(models.Model):
             ),
         ],
     )
-    operator_code = models.CharField('Код оператора', max_length=3, blank=True, db_index=True, editable=False)
-    tag = models.CharField('Тег', max_length=50)
+    operator_code = models.CharField('Код оператора', max_length=3, blank=True)
+    tag = models.CharField('Тег', max_length=50, db_index=True)
     timezone = models.CharField(
         'Часовой пояс',
         choices=TIMEZONE_CHOICES,
