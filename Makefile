@@ -17,3 +17,7 @@ makemigrations:
 
 migrate:
 	docker compose run --rm app ./manage.py migrate
+
+first_start:
+	make build migrate
+	docker compose run --rm app ./manage.py createsuperuser
