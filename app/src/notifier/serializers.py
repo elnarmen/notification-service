@@ -12,7 +12,6 @@ class ClientSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()  # noqa A003
     client = ClientSerializer()
 
     class Meta:
@@ -22,6 +21,8 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class MailingSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()  # noqa A003
+    sent_messages_count = serializers.SerializerMethodField(read_only=True)
+    unsent_messages_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Mailing
@@ -32,7 +33,15 @@ class MailingSerializer(serializers.ModelSerializer):
             'end_at',
             'operator_code',
             'client_tag',
+            'sent_messages_count',
+            'unsent_messages_count',
         ]
+
+    def get_sent_messages_count(self, obj):
+        return obj.messages.filter(status=True).count()
+
+    def get_unsent_messages_count(self, obj):
+        return obj.messages.filter(status=False).count()
 
     def to_representation(self, instance):
         if self.context.get('include_messages', False):

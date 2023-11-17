@@ -8,7 +8,7 @@ class Mailing(models.Model):
     content = models.TextField('Сообщение')
     start_at = models.DateTimeField('Время запуска')
     end_at = models.DateTimeField('Время окончания')
-    operator_code = models.CharField('Код оператора клиента', max_length=3, blank=True, editable=False)
+    operator_code = models.CharField('Код оператора клиента', max_length=3, blank=True)
     client_tag = models.CharField('Тег клиента', max_length=50, blank=True)
 
     class Meta:

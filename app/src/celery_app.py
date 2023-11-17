@@ -1,5 +1,4 @@
 import os
-import time
 from celery import Celery
 from django.conf import settings
 
@@ -8,9 +7,3 @@ app = Celery('notification_service')
 app.config_from_object('django.conf:settings')
 app.conf.broker_url = settings.CELERY_BROKER_URL
 app.autodiscover_tasks()
-
-
-@app.task()
-def test_task():
-    time.sleep(10)
-    print('test task worked')
