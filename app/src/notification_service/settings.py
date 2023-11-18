@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'notifier.apps.NotifierConfig',
     'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

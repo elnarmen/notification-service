@@ -2,10 +2,16 @@ from django.contrib import admin
 from .models import Mailing, Client, Message
 
 
+class MessageInline(admin.TabularInline):
+    model = Message
+    readonly_fields = ['id', 'dispatch_at', 'status', 'mailing', 'client']
+
+
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
     list_display = ['id', 'content', 'start_at', 'end_at', 'operator_code', 'client_tag']
     list_display_links = ['id', 'content']
+    inlines = [MessageInline]
 
 
 @admin.register(Client)
