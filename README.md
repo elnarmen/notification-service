@@ -1,7 +1,3 @@
-[![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
-
-
 ## Как запустить
 Склонируйте репозиторий:
 ```
@@ -25,15 +21,9 @@ DATABASE_URL=postgresql://db_user:db_password@postgres:5432/db_name
 $ make build
 ```
 
-Примените миграции к базе данных:
+Примените миграции и создайте суперюзера:
 ```shell
-$ make migrate
-…
- ✔ Container notification-service-postgres-1  Started                                                                                                       3.4s 
-Operations to perform:
-  Apply all migrations: admin, auth, contenttypes, sessions
-Running migrations:
-  No migrations to apply.
+$ make first_start
 ```
 
 Запустите приложение командой:
@@ -42,46 +32,44 @@ Running migrations:
 $ make run
 ```
 
-## Как вести разработку
-<a name="linters"></a>
-### Линтеры
-Для того чтобы при коммите автоматически запускались линтеры, установите [pre-commit package manager](https://pre-commit.com/).
-Затем в корне репозитория запустите команду для настройки хуков:
+## В апи реализованы эндпоинты:
 
-```shell
-$ pre-commit install
-```
-Если линтеры обнаружат проблемы в коде, коммит прервётся с сообщением об ошибке. 
+http://0.0.0.0:8000/docs/ - Swagger UI с подробным описанием API
 
+https://0.0.0.0:8000/swagger.json - описание реализованных методов в json-формате 
 
-Чтобы самостоятельно проверить линтером код в каталоге `/app/src/` запустите команду:
+https://0.0.0.0:8000/swagger.yaml - описание реализованных методов в yaml-формате 
 
-```shell
-$ make lint
-```
+http://0.0.0.0:8000/admin/ - администраторский Web UI
 
-<a name="add-python-package-to-image"></a>
-### Как обновить зависимости
+http://0.0.0.0:5555 - celery flower
 
-В качестве менеджера пакетов для образа используется [Poetry](https://python-poetry.org/docs/).
+### Clien API
 
-Файлы Poetry `pyproject.toml` и `poetry.lock` проброшены в контейнер в виде volume, поэтому изменения 
-зависимостей внутри контейнера попадают и наружу в git-репозиторий.
+http://0.0.0.0:8000/api/v1/clients/
+- **POST:** создание нового клиента
 
-Например, чтобы добавить библиотеку `environs`, запустите все контейнеры, подключитесь к уже работающему 
-контейнеру `app` и внутри запустите команду `poetry add environs`:
+http://0.0.0.0:8000/api/v1/clients/{pk}
+- **PUT:** полное обновление данных клиента
+- **PATCH:** частичное обновление данных клиента
+- **DELETE:** удаление клиента
 
-```shell
-$ docker compose up -d
-$ docker compose exec app bash
-container:$ poetry add environs
-container:$ exit
-```
+http://0.0.0.0:8000/api/v1/mailing/ 
+- **GET:** получение списка всех рассылок
+- **POST** создание новой рассылки
 
-Конфигурационные файлы `pyproject.toml` и `poetry.lock` обновятся не только внутри контейнера, но и в репозитории 
-благодаря настроенным docker volumes.
- 
-Не забудьте обновить докер-образ, чтобы новые контейнеры тоже получали свежий набор зависимостей:
-```shell
-$ docker compose build app
-```
+http://0.0.0.0:8000/api/v1/mailing/{id}
+- **GET:** получение детальной информации о рассылке
+- **PUT:** полное обновление данных рассылки
+- **PATCH:** частичное обновление данных рассылки
+- **DELETE:** удаление рассылки
+<hr>
+
+Техзадание: https://www.craft.do/s/n6OVYFVUpq0o6L
+
+## Дополнительно выполненные задания
+1. организовать тестирование написанного кода
+2. подготовить docker-compose для запуска всех сервисов проекта одной командой
+3. сделать так, чтобы по адресу /docs/ открывалась страница со Swagger UI и в нём отображалось описание разработанного API.
+4. реализовать администраторский Web UI для управления рассылками и получения статистики по отправленным сообщениям
+5. удаленный сервис может быть недоступен, долго отвечать на запросы или выдавать некорректные ответы. Необходимо организовать обработку ошибок и откладывание запросов при неуспехе для последующей повторной отправки. Задержки в работе внешнего сервиса никак не должны оказывать влияние на работу сервиса рассылок.
