@@ -38,10 +38,10 @@ class MailingSerializer(serializers.ModelSerializer):
         ]
 
     def get_sent_messages_count(self, obj):
-        return obj.messages.filter(status=True).count()
+        return int(obj.messages.filter(status=True).count())
 
     def get_unsent_messages_count(self, obj):
-        return obj.messages.filter(status=False).count()
+        return int(obj.messages.filter(status=False).count())
 
     def to_representation(self, instance):
         if self.context.get('include_messages', False):
@@ -49,10 +49,14 @@ class MailingSerializer(serializers.ModelSerializer):
         return super().to_representation(instance)
 
     def validate(self, data):
-        if data['start_at'] >= data['end_at']:
-            raise serializers.ValidationError(
-                'Время начала рассылки должно быть позже её окончания.',
-            )
-        if data['end_at'] <= timezone.now():
+        start_at = data.get('start_at')
+        end_at = data.get('end_at')
+
+        if start_at is not None and end_at is not None:
+            if start_at >= end_at:
+                raise serializers.ValidationError('Время начала рассылки должно быть позже её окончания.')
+
+        if end_at is not None and end_at <= timezone.now():
             raise serializers.ValidationError('Время окончания рассылки уже прошло.')
+
         return super().validate(data)
