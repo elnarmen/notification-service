@@ -13,3 +13,8 @@ repos:
         entry: docker compose run -T --rm py-linters flake8 /app/src/
         language: system
         pass_filenames: no
+      - id: tests
+        name: tests
+        entry: docker compose run -T --rm app ./manage.py test
+        language: system
+        pass_filenames: no
